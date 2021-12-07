@@ -61,14 +61,15 @@ function whatNext() {
                 
             }
             else if (answer.next === 'View all roles'){
-                db.query('SELECT * FROM role', function (err, results) {
+                const sql = 'SELECT role.title, role.salary, department.name FROM role LEFT JOIN department ON department.id = role.department_id;'
+                db.query(sql, function (err, results) {
                     console.table(results);
                     whatNext()
                   });
             }
             else if (answer.next === 'View all employees'){
-                // const sql = 'SELECT id, manager_id FROM employee t1 INNER JOIN employee t2 ON t1.id = t2.manager_id;'
-                const sql = 'SELECT * FROM employee'
+                const sql = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, CONCAT(manager.first_name, " ", manager.last_name) AS manager FROM employee LEFT JOIN role ON role.id = employee.role_id LEFT JOIN department ON  role.department_id = department.id LEFT JOIN employee manager ON manager.id = employee.manager_id;'
+                // const sql = 'SELECT * FROM employee'
                 db.query(sql, function (err, results) {
                     console.table(results);
                     whatNext()
@@ -87,7 +88,7 @@ function whatNext() {
                     // console.log(deptList)
                     // const sql2 = 'INSERT INTO department (name) VALUES (answer.newDept)'; 
                                 
-                    db.query('INSERT INTO department (name) VALUES (?)',(answer.newDept), function (err, results) {
+                    db.query('INSERT INTO department (name) SET ?',answer.newDept, function (err, results) {
                         // console.table(results);
                       });                        
                     whatNext()
